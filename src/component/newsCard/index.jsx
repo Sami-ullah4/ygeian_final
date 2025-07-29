@@ -1,7 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-
 const NewsCard = ({ newsData }) => {
   const cardData = newsData.slice(0, 21);
   return (
@@ -40,7 +39,7 @@ const NewsCard = ({ newsData }) => {
                   </h2>
 
                   <div className="text-xs text-[#7A929E] font-medium">
-                    3h ago
+                    {data.publishedAt}{" "}
                   </div>
                 </div>
 

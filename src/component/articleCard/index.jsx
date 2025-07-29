@@ -23,6 +23,23 @@ const ArticleCard = () => {
 
   return (
     <>
+      <div className="min-w-[250px] max-w-[700px] py-5">
+        <h1 className="font-[600] text-[40px] leading-[130%] text-[#002A3C]  m-auto pb-5">
+          {article.title}
+        </h1>
+       <p className="font-[400] text-[16px] leading-[150%] text-[#375E6C] py-5">
+  {article.description}{" "}
+  <a
+    href="https://www.medpagetoday.com/popmedicine/cultureclinic/116629"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    Learn more
+  </a>
+</p>
+
+      </div>
+
       <div className="flex flex-col gap-[15px]">
         <div className=" flex justify-between items-center  lg:hidden ">
           <div className="flex gap-5">
@@ -74,7 +91,9 @@ const ArticleCard = () => {
           </div>
         </div>
       </div>
+
       {/* 2nd div */}
+      {/* the dive below the image  */}
       <div className="hidden lg:flex justify-between items-center py-5">
         <div className="flex gap-[60px]">
           <div className="">
@@ -142,20 +161,6 @@ const ArticleCard = () => {
           </div>
         </div>
       </div>
-
-      {/* // <div className="w-[80%] mx-auto py-10">
-    //   <img
-    //     src={article.image}
-    //     alt="Article"
-    //     className="w-full h-80 object-cover rounded-lg"
-    //   />
-    //   <div className="mt-6">
-    //     <h1 className="text-3xl font-bold text-[#002A3C] mb-4">{article.title}</h1>
-    //     <p className="text-[#375E6C] text-lg">
-    //       {article.content || 'No content available.'}
-    //     </p>
-    //   </div>
-    // </div> */}
     </>
   );
 };

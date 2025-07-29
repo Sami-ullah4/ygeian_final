@@ -18,22 +18,24 @@ const Home = () => {
     }
   }, [news, isNews]);
 
- 
-
   return (
     <>
       <section>
-        <div className="flex flex-col gap-5 items-center justify-center min-h-[300px]">
-          <h1 className="font-[600] text-[40px] leading-[130%] text-[#002A3C] text-center w-[528px]">
+        <div className="  min-w-[295px] max-w-[500px] mx-auto text-center">
+          <h1 className="font-[600] text-[40px] leading-[130%] text-[#002A3C]">
             Stay Ahead in Medicine with <br /> Personalized News
           </h1>
-          <p className="font-[400] text-[19px] leading-[130%] text-[#375E6C] mon-h-[674px]">
+          <p className="font-[400] text-[19px] leading-[130%] text-[#375E6C] ">
             Get daily updates from your field of expertise, summarized and
             tailored for you.
           </p>
         </div>
       </section>
-      {isNewsLoading ? <h1 className="text-center text-[20px] ">Loading...</h1> : <NewsCard newsData={newsData} />}
+      {isNewsLoading ? (
+        <h1 className="text-center text-[20px] ">Loading...</h1>
+      ) : (
+        <NewsCard newsData={newsData} />
+      )}
     </>
   );
 };

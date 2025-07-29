@@ -1,12 +1,15 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { getNews } from "./news.action";
 
+
 const initialState = {
   news: [],
   isNews: false,
   isNewsLoading: false,
   isNewsFailed: false,
   error: {},
+
+  
 };
 
 export const newsSlicer = createSlice({
@@ -14,6 +17,7 @@ export const newsSlicer = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
+    // Get News Cases
     builder
       .addCase(getNews.pending, (state) => {
         state.isNewsLoading = true;
@@ -30,8 +34,11 @@ export const newsSlicer = createSlice({
         state.isNewsLoading = false;
         state.isNews = false;
         state.isNewsFailed = true;
-        state.error = action.payload; 
+        state.error = action.payload;
       });
+
+
+
   },
 });
 

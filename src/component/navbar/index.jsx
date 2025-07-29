@@ -9,6 +9,7 @@ import { RiArrowDropDownLine } from "react-icons/ri";
 import { CiSaveDown2 } from "react-icons/ci";
 import { IoSettingsOutline } from "react-icons/io5";
 import { MdLogout } from "react-icons/md";
+import { useSelector } from "react-redux";
 
 const Navbar = () => {
   const [cardShow, setCardShow] = useState(false);
@@ -17,15 +18,13 @@ const Navbar = () => {
   const location = useLocation();
   const cardRef = useRef(null);
   const buttonRuf = useRef(null);
-  const menuBtnRef = useRef(null); // for mobile menu icon
+  const menuBtnRef = useRef(null);
 
   const handelProfileCard = () => {
     setCardShow((prev) => !prev);
-
   };
   const toggleMobileMenu = () => {
     setMobileMenuOpen((prev) => !prev);
-   
   };
   useEffect(() => {
     setCardShow(false);
@@ -50,6 +49,7 @@ const Navbar = () => {
     };
   }, []);
 
+  const user = useSelector((state) => state.auth.user);
   return (
     <nav className="shadow-md bg-white">
       <div className="h-[48px] lg:h-[71px] mx-auto flex items-center justify-between px-4">
@@ -87,7 +87,7 @@ const Navbar = () => {
           <Button
             bgColor="bg-[#43B3E5]"
             text="Sign up"
-            routDirection={"/singup"}
+            routDirection={"/signup"}
             borderColor="border-[#43B3E5]"
             textColor="text-white"
           />
@@ -122,14 +122,14 @@ const Navbar = () => {
                   <div className="p-3 flex flex-col gap-4">
                     <div>
                       <h1 className="text-[15px] text-[#002A3C] font-[600] leading-[130%]">
-                        Marija Kitanovska
+                        {user?.fullName || "guest"}
                       </h1>
                       <p className="font-[400] mt-0.5 text-[12px] leading-[130%] text-[#375E6C]">
-                        kitanovskamarija@gmail.com
+                        {user?.email || "abc...@gmail.com"}{" "}
                       </p>
                     </div>
 
-                    <Link to="/profile-settings">
+                    <Link to="/user_profile">
                       <button className="cursor-pointer bg-[#E5F5FF] text-[#002A3C] font-[400] text-[12px] leading-[130%] w-full p-2 rounded-full">
                         My profile
                       </button>
