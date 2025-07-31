@@ -1,5 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { register, login, CheckSession, sendingOtp, verifyOtp } from "./auth.action";
+import {
+  register,
+  login,
+  CheckSession,
+  sendingOtp,
+  verifyOtp,
+  googleLogin,
+} from "./auth.action";
 
 // Load user from localStorage
 let userFromStorage = null;
@@ -15,15 +22,21 @@ const initialState = {
   user: userFromStorage,
   token: tokenFromStorage || null,
   error: {},
+  isAuthenticated: false,
+
+  //register
   isRegisterSuccess: false,
   isRegisterLoading: false,
   isRegisterFailed: false,
+  //login
   isLoginSuccess: !!tokenFromStorage,
   isLoginLoading: false,
   isLoginFailed: false,
+  //session
   isCheckSessionSuccess: false,
   isCheckSessionLoading: false,
   isCheckSessionFailed: false,
+  //otp
   otpLoading: false,
   otpSent: false,
   otpError: null,
@@ -84,7 +97,7 @@ export const authSlice = createSlice({
       })
       .addCase(login.fulfilled, (state, action) => {
         const { userData, accessToken } = action.payload;
-        state.isLoginLoading = false;
+        (state.isAuthenticated = true), (state.isLoginLoading = false);
         state.isLoginSuccess = true;
         state.user = userData;
         state.token = accessToken;
@@ -117,6 +130,35 @@ export const authSlice = createSlice({
         state.isCheckSessionFailed = true;
         state.error = action.payload || action.message || action.error;
       });
+
+      //googleAuth
+      builder
+  .addCase(googleLogin.pending, (state) => {
+    state.isLoginLoading = true;
+    state.isLoginSuccess = false;
+    state.isLoginFailed = false;
+  })
+  .addCase(googleLogin.fulfilled, (state, action) => {
+    const { userData, accessToken } = action.payload;
+    state.isAuthenticated = true;
+    state.isLoginLoading = false;
+    state.isLoginSuccess = true;
+    state.user = userData;
+    state.token = accessToken;
+
+    localStorage.setItem("ygeianNewsToken", accessToken);
+    localStorage.setItem("ygeianNewsUser", JSON.stringify(userData));
+  })
+  .addCase(googleLogin.rejected, (state, action) => {
+    state.isLoginLoading = false;
+    state.isAuthenticated = false;
+    state.isLoginSuccess = false;
+    state.isLoginFailed = true;
+    state.error = action.payload || action.error?.message || action.error;
+  });
+
+
+      
 
     // ✅ Send OTP
     builder
