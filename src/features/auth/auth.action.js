@@ -1,5 +1,13 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { registerApi, loginApi, checkSessionApi , sendingOtpApi  , verifyOtpApi} from "./api";
+
+import {
+  registerApi,
+  loginApi,
+  checkSessionApi,
+  sendingOtpApi,
+  verifyOtpApi,
+  googleSignIn,
+} from "./api";
 
 export const register = createAsyncThunk(
   "auth/register",
@@ -39,18 +47,16 @@ export const login = createAsyncThunk(
 //////////////////////check session /////////////////////////
 export const CheckSession = createAsyncThunk(
   "auth/session",
-  async (payload, { rejectWithValue }) => {
-    console.log("🔍 checkSession thunk triggered"); // ✅ Add this
-
+  async (_, { rejectWithValue }) => {
     try {
-      const response = await checkSessionApi(payload);
-      if (!rejectWithValue || !response.data) {
-        return rejectWithValue("No response data received from server.");
-      }
+      const token = localStorage.getItem("ygeianNewsToken");
+      if (!token) return rejectWithValue("No token found");
+
+      const response = await checkSessionApi(token);
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data || error.message || "somethicg wroing in api"
+        error.response?.data || error.message || "Check session failed"
       );
     }
   }
@@ -64,7 +70,7 @@ export const sendingOtp = createAsyncThunk(
     try {
       const response = await sendingOtpApi(payload);
 
-      console.log(response)
+      console.log(response);
       if (!response?.data) {
         return rejectWithValue("No response data received from server.");
       }
@@ -72,14 +78,15 @@ export const sendingOtp = createAsyncThunk(
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        error?.response?.data || error.message || "Something went wrong in the API."
+        error?.response?.data ||
+          error.message ||
+          "Something went wrong in the API."
       );
     }
   }
 );
 
 /////varify otp
-
 
 export const verifyOtp = createAsyncThunk(
   "auth/verifyOtp",
@@ -88,7 +95,36 @@ export const verifyOtp = createAsyncThunk(
       const response = await verifyOtpApi(payload);
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "OTP verification failed");
+      return rejectWithValue(
+        error.response?.data?.message || "OTP verification failed"
+      );
+    }
+  }
+);
+///googlelogin
+
+export const googleLogin = createAsyncThunk(
+  "auth/google",
+  async (access_Token, { rejectWithValue }) => {
+    try {
+      const authData = await googleSignIn(access_Token);
+      // console.log("✅ Google response:", authData.data);
+
+      const userInfo = authData?.data;
+
+      // console.log(userInfo?.email)
+      const googleData = {
+        email: userInfo.email,
+        fullName: userInfo.name,
+        image: userInfo.picture,
+        provider: "google",
+      };
+
+      const res = await loginApi(googleData); // Send to your backend
+
+      return res.data; // { userData, accessToken }
+    } catch (err) {
+      return rejectWithValue(err.response?.data || err.message);
     }
   }
 );

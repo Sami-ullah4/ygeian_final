@@ -8,6 +8,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { register, sendingOtp, verifyOtp } from "../../features/auth/auth.action";
 import { resetAuthState } from "../../features/auth/auth.slice";
+import GoogleOAuth from "../../component/googleAuth";
 
 const Signup = () => {
   const [registerData, setRegisterData] = useState({
@@ -156,6 +157,7 @@ const Signup = () => {
             Register
           </button>
         </form>
+        <GoogleOAuth/>
 
         {isRegisterLoading && <p className="text-blue-500">Registering...</p>}
         {isRegisterFailed && (
