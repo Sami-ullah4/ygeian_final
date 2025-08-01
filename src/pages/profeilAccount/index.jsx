@@ -11,7 +11,6 @@ const ProfileAccount = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    console.log("user loged out");
     dispatch(logout());
     navigate("/login");
   };

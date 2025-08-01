@@ -10,6 +10,7 @@ import SignupPage from "../pages/singupPage/index";
 import ProfileAccount from "../pages/profeilAccount"; 
 import UserProfile from "../pages/userProfeil"; 
 import Spaceiliest from"../pages/profeilSpecilise"
+import OtpSend from "../component/optSend";
 
 export const Routes = createBrowserRouter([
   {
@@ -21,6 +22,7 @@ export const Routes = createBrowserRouter([
       { path: "/article/:index", element: <ArticlePage /> },
       { path: "/login", element: <LoginPage /> },
       { path: "/signup", element: <SignupPage /> },
+      {path: "/send_otp" , element: <OtpSend/> },
       {
         path: "/user_profile",
         element: <UserProfile />,

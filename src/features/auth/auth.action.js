@@ -69,8 +69,9 @@ export const sendingOtp = createAsyncThunk(
   async (payload, { rejectWithValue }) => {
     try {
       const response = await sendingOtpApi(payload);
+      console.log(response.data)
 
-      console.log(response);
+      // console.log(response);
       if (!response?.data) {
         return rejectWithValue("No response data received from server.");
       }
