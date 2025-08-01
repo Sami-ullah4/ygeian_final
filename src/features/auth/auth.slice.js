@@ -12,10 +12,16 @@ import {
 let userFromStorage = null;
 try {
   const userData = localStorage.getItem("ygeianNewsUser");
-  userFromStorage = userData ? JSON.parse(userData) : null;
+  if (userData && userData !== "undefined") {
+    userFromStorage = JSON.parse(userData);
+  } else {
+    userFromStorage = null;
+  }
 } catch (error) {
   console.error("Failed to parse user from localStorage:", error);
+  localStorage.removeItem("ygeianNewsUser"); 
 }
+
 const tokenFromStorage = localStorage.getItem("ygeianNewsToken");
 
 const initialState = {

@@ -63,7 +63,7 @@ const LoginPage = () => {
   const loginWithGoogle = useGoogleLogin({
     scope: "profile email",
     onSuccess: (tokenResponse) => {
-      console.log("✅ Token:", tokenResponse.access_token);
+      // console.log("✅ Token:", tokenResponse.access_token);
       dispatch(googleLogin(tokenResponse.access_token));
     },
     onError: (err) => console.error("Google Login Error:", err),
