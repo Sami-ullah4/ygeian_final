@@ -8,7 +8,7 @@ import {
   verifyOtpApi,
   googleSignIn,
 } from "./api";
-
+///////register api//////////////
 export const register = createAsyncThunk(
   "auth/register",
   async (payload, { rejectWithValue }) => {
@@ -17,10 +17,11 @@ export const register = createAsyncThunk(
       if (!res || !res.data) {
         return rejectWithValue("no responce from server");
       }
-
       return res.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data || error.message);
+      return rejectWithValue(
+        error.response?.data || error.message || "there is some issu in api"
+      );
     }
   }
 );
@@ -69,7 +70,7 @@ export const sendingOtp = createAsyncThunk(
   async (payload, { rejectWithValue }) => {
     try {
       const response = await sendingOtpApi(payload);
-      console.log(response.data)
+      console.log(response.data);
 
       // console.log(response);
       if (!response?.data) {

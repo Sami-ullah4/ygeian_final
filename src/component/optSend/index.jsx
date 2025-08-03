@@ -1,14 +1,24 @@
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { sendingOtp } from "../../features/auth/auth.action";
 
 const OtpSend = () => {
-  const [email, setEmail] = useState(""); // use email string instead of boolean
   const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth.user); // Better naming
+  console.log(user);
+
+  const [email, setEmail] = useState(user?.email || "");
 
   const handleOtpSent = (e) => {
-    e.preventDefault(); // correct spelling
-    dispatch(sendingOtp({ email })); // pass the email properly
+    e.preventDefault();
+    dispatch(sendingOtp({ email }));
+  };
+
+  const handleOnChange = (e) => {
+    const { name, value } = e.target;
+    if (name === "email") {
+      setEmail(value);
+    }
   };
 
   return (
@@ -26,9 +36,9 @@ const OtpSend = () => {
           <label htmlFor="email">Enter Email</label>
           <input
             type="email"
-            id="email"
+            name="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={handleOnChange}
             className="border border-gray-300 rounded-md p-3 outline-none focus:border-[#132D5E] focus:ring-0"
             placeholder="you@example.com"
             required
