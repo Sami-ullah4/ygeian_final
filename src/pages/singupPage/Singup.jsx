@@ -19,12 +19,8 @@ const Signup = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const {
-    isRegisterSuccess,
-    isRegisterLoading,
-    isRegisterFailed,
-    error,
-  } = useSelector((state) => state.auth);
+  const { isRegisterSuccess, isRegisterLoading, isRegisterFailed, error } =
+    useSelector((state) => state.auth);
 
   const handleOnSubmit = async (e) => {
     e.preventDefault();
@@ -52,16 +48,10 @@ const Signup = () => {
     //       alert("OTP verification failed. Please check your code.");
     //       return;
     //     }
+    // Step 2: Register user
+
+    dispatch(register(registerData));
   };
-  // Step 2: Register user
-  dispatch(
-    register(
-      registerData.email,
-      registerData.fullName,
-      registerData.password,
-      registerData.confirmPassword
-    )
-  );
 
   const handleOnChange = (e) => {
     const { name, value } = e.target;
@@ -74,9 +64,9 @@ const Signup = () => {
   useEffect(() => {
     if (isRegisterSuccess) {
       setTimeout(() => {
-        navigate("/login");
+        navigate("/send_otp");
         dispatch(resetAuthState());
-      }, 2000);
+      }, 3000);
     }
   }, [isRegisterSuccess, navigate, dispatch]);
 

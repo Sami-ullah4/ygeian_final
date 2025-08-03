@@ -19,7 +19,7 @@ try {
   }
 } catch (error) {
   console.error("Failed to parse user from localStorage:", error);
-  localStorage.removeItem("ygeianNewsUser"); 
+  localStorage.removeItem("ygeianNewsUser");
 }
 
 const tokenFromStorage = localStorage.getItem("ygeianNewsToken");
@@ -31,6 +31,7 @@ const initialState = {
   isAuthenticated: false,
 
   //register
+  // email: '',
   isRegisterSuccess: false,
   isRegisterLoading: false,
   isRegisterFailed: false,
@@ -69,7 +70,7 @@ export const authSlice = createSlice({
       state.isLoginSuccess = false;
       localStorage.removeItem("ygeianNewsToken");
       localStorage.removeItem("ygeianNewsUser");
-    },
+    }
   },
   extraReducers: (builder) => {
     // ✅ Register
@@ -137,34 +138,31 @@ export const authSlice = createSlice({
         state.error = action.payload || action.message || action.error;
       });
 
-      //googleAuth
-      builder
-  .addCase(googleLogin.pending, (state) => {
-    state.isLoginLoading = true;
-    state.isLoginSuccess = false;
-    state.isLoginFailed = false;
-  })
-  .addCase(googleLogin.fulfilled, (state, action) => {
-    const { userData, accessToken } = action.payload;
-    state.isAuthenticated = true;
-    state.isLoginLoading = false;
-    state.isLoginSuccess = true;
-    state.user = userData;
-    state.token = accessToken;
+    //googleAuth
+    builder
+      .addCase(googleLogin.pending, (state) => {
+        state.isLoginLoading = true;
+        state.isLoginSuccess = false;
+        state.isLoginFailed = false;
+      })
+      .addCase(googleLogin.fulfilled, (state, action) => {
+        const { userData, accessToken } = action.payload;
+        state.isAuthenticated = true;
+        state.isLoginLoading = false;
+        state.isLoginSuccess = true;
+        state.user = userData;
+        state.token = accessToken;
 
-    localStorage.setItem("ygeianNewsToken", accessToken);
-    localStorage.setItem("ygeianNewsUser", JSON.stringify(userData));
-  })
-  .addCase(googleLogin.rejected, (state, action) => {
-    state.isLoginLoading = false;
-    state.isAuthenticated = false;
-    state.isLoginSuccess = false;
-    state.isLoginFailed = true;
-    state.error = action.payload || action.error?.message || action.error;
-  });
-
-
-      
+        localStorage.setItem("ygeianNewsToken", accessToken);
+        localStorage.setItem("ygeianNewsUser", JSON.stringify(userData));
+      })
+      .addCase(googleLogin.rejected, (state, action) => {
+        state.isLoginLoading = false;
+        state.isAuthenticated = false;
+        state.isLoginSuccess = false;
+        state.isLoginFailed = true;
+        state.error = action.payload || action.error?.message || action.error;
+      });
 
     // ✅ Send OTP
     builder
@@ -209,5 +207,5 @@ export const authSlice = createSlice({
   },
 });
 
-export const { resetAuthState, logout } = authSlice.actions;
+export const { resetAuthState, logout    } = authSlice.actions;
 export default authSlice.reducer;
