@@ -7,6 +7,7 @@ import {
   verifyOtp,
   googleLogin,
 } from "./auth.action";
+//  sdsd
 
 // Load user from localStorage
 let userFromStorage = null;
@@ -14,8 +15,6 @@ try {
   const userData = localStorage.getItem("ygeianNewsUser");
   if (userData && userData !== "undefined") {
     userFromStorage = JSON.parse(userData);
-  } else {
-    userFromStorage = null;
   }
 } catch (error) {
   console.error("Failed to parse user from localStorage:", error);
@@ -28,22 +27,24 @@ const initialState = {
   user: userFromStorage,
   token: tokenFromStorage || null,
   error: {},
-  isAuthenticated: false,
+  isAuthenticated: !!tokenFromStorage,
 
-  //register
-  // email: '',
+  // Register
   isRegisterSuccess: false,
   isRegisterLoading: false,
   isRegisterFailed: false,
-  //login
+
+  // Login
   isLoginSuccess: !!tokenFromStorage,
   isLoginLoading: false,
   isLoginFailed: false,
-  //session
+
+  // Session
   isCheckSessionSuccess: false,
   isCheckSessionLoading: false,
   isCheckSessionFailed: false,
-  //otp
+
+  // OTP
   otpLoading: false,
   otpSent: false,
   otpError: null,
@@ -54,6 +55,7 @@ export const authSlice = createSlice({
   initialState,
   reducers: {
     resetAuthState: (state) => {
+      // Only reset flags and temporary states
       state.isRegisterSuccess = false;
       state.isRegisterFailed = false;
       state.isRegisterLoading = false;
@@ -63,17 +65,24 @@ export const authSlice = createSlice({
       state.otpSent = false;
       state.otpError = null;
       state.error = {};
+      // DO NOT clear token or user info here
     },
-    logout: (state) => {
+
+    logOut: (state) => {
+      // Fully reset the state
+      state.isLoginSuccess = false;
+      state.isLoginFailed = false;
       state.user = null;
       state.token = null;
-      state.isLoginSuccess = false;
+      state.isAuthenticated = false;
       localStorage.removeItem("ygeianNewsToken");
       localStorage.removeItem("ygeianNewsUser");
-    }
+      localStorage.removeItem("tempMail");
+    },
   },
+
   extraReducers: (builder) => {
-    // ✅ Register
+    // Register
     builder
       .addCase(register.pending, (state) => {
         state.isRegisterLoading = true;
@@ -81,13 +90,10 @@ export const authSlice = createSlice({
         state.isRegisterSuccess = false;
       })
       .addCase(register.fulfilled, (state, action) => {
-        const { userData, accessToken } = action.payload;
         state.isRegisterLoading = false;
         state.isRegisterSuccess = true;
-        state.user = userData;
-        state.token = accessToken;
-        localStorage.setItem("ygeianNewsToken", accessToken);
-        localStorage.setItem("ygeianNewsUser", JSON.stringify(userData));
+        state.isAuthenticated = true;
+        state.user = action.payload;
       })
       .addCase(register.rejected, (state, action) => {
         state.isRegisterLoading = false;
@@ -95,7 +101,7 @@ export const authSlice = createSlice({
         state.error = action.payload || action.error?.message || action.error;
       });
 
-    // ✅ Login
+    // Login
     builder
       .addCase(login.pending, (state) => {
         state.isLoginLoading = true;
@@ -104,41 +110,22 @@ export const authSlice = createSlice({
       })
       .addCase(login.fulfilled, (state, action) => {
         const { userData, accessToken } = action.payload;
-        (state.isAuthenticated = true), (state.isLoginLoading = false);
+        state.isLoginLoading = false;
         state.isLoginSuccess = true;
         state.user = userData;
         state.token = accessToken;
+        state.isAuthenticated = true;
         localStorage.setItem("ygeianNewsToken", accessToken);
         localStorage.setItem("ygeianNewsUser", JSON.stringify(userData));
       })
       .addCase(login.rejected, (state, action) => {
         state.isLoginLoading = false;
-        state.isLoginSuccess = false;
         state.isLoginFailed = true;
+        state.isLoginSuccess = false;
         state.error = action.payload || action.error?.message || action.error;
       });
 
-    // ✅ Check session
-    builder
-      .addCase(CheckSession.pending, (state) => {
-        state.isCheckSessionLoading = true;
-        state.isCheckSessionFailed = false;
-      })
-      .addCase(CheckSession.fulfilled, (state, action) => {
-        const { userData, accessToken } = action.payload;
-        state.isCheckSessionSuccess = true;
-        state.user = userData;
-        state.token = accessToken;
-        localStorage.setItem("ygeianNewsToken", accessToken);
-        localStorage.setItem("ygeianNewsUser", JSON.stringify(userData));
-      })
-      .addCase(CheckSession.rejected, (state, action) => {
-        state.isCheckSessionLoading = false;
-        state.isCheckSessionFailed = true;
-        state.error = action.payload || action.message || action.error;
-      });
-
-    //googleAuth
+    // Google Login
     builder
       .addCase(googleLogin.pending, (state) => {
         state.isLoginLoading = true;
@@ -147,24 +134,48 @@ export const authSlice = createSlice({
       })
       .addCase(googleLogin.fulfilled, (state, action) => {
         const { userData, accessToken } = action.payload;
-        state.isAuthenticated = true;
         state.isLoginLoading = false;
         state.isLoginSuccess = true;
         state.user = userData;
         state.token = accessToken;
-
+        state.isAuthenticated = true;
         localStorage.setItem("ygeianNewsToken", accessToken);
         localStorage.setItem("ygeianNewsUser", JSON.stringify(userData));
       })
       .addCase(googleLogin.rejected, (state, action) => {
         state.isLoginLoading = false;
-        state.isAuthenticated = false;
         state.isLoginSuccess = false;
         state.isLoginFailed = true;
+        state.isAuthenticated = false;
         state.error = action.payload || action.error?.message || action.error;
       });
 
-    // ✅ Send OTP
+    // Check Session
+    builder
+      .addCase(CheckSession.pending, (state) => {
+        state.isCheckSessionLoading = true;
+        state.isCheckSessionFailed = false;
+      })
+      .addCase(CheckSession.fulfilled, (state, action) => {
+        state.isCheckSessionLoading = false;
+        state.isCheckSessionSuccess = true;
+        state.isAuthenticated = true;
+
+        state.user = action.payload;
+      })
+      .addCase(CheckSession.rejected, (state, action) => {
+        state.isCheckSessionLoading = false;
+        state.isCheckSessionFailed = true;
+        state.isAuthenticated = false;
+        state.user = null;
+        state.token = null;
+        localStorage.removeItem("ygeianNewsToken");
+        localStorage.removeItem("ygeianNewsUser");
+        localStorage.removeItem("tempMail");
+        state.error = action.payload || action.message || action.error;
+      });
+
+    // Send OTP
     builder
       .addCase(sendingOtp.pending, (state) => {
         state.otpLoading = true;
@@ -174,11 +185,9 @@ export const authSlice = createSlice({
       .addCase(sendingOtp.fulfilled, (state, action) => {
         state.otpLoading = false;
         state.otpSent = true;
-        const { userData, accessToken } = action.payload;
-        state.user = userData;
-        state.token = accessToken;
-        localStorage.setItem("ygeianNewsToken", accessToken);
-        localStorage.setItem("ygeianNewsUser", JSON.stringify(userData));
+        state.isAuthenticated = true;
+
+        state.user = action.payload;
       })
       .addCase(sendingOtp.rejected, (state, action) => {
         state.otpLoading = false;
@@ -186,7 +195,7 @@ export const authSlice = createSlice({
         state.otpError = action.payload || "OTP sending failed";
       });
 
-    // ✅ Verify OTP
+    // Verify OTP
     builder
       .addCase(verifyOtp.pending, (state) => {
         state.otpLoading = true;
@@ -194,11 +203,8 @@ export const authSlice = createSlice({
       })
       .addCase(verifyOtp.fulfilled, (state, action) => {
         state.otpLoading = false;
-        const { userData, accessToken } = action.payload;
-        state.user = userData;
-        state.token = accessToken;
-        localStorage.setItem("ygeianNewsToken", accessToken);
-        localStorage.setItem("ygeianNewsUser", JSON.stringify(userData));
+        state.isAuthenticated = true;
+        state.user = action.payload;
       })
       .addCase(verifyOtp.rejected, (state, action) => {
         state.otpLoading = false;
@@ -207,5 +213,5 @@ export const authSlice = createSlice({
   },
 });
 
-export const { resetAuthState, logout    } = authSlice.actions;
+export const { resetAuthState, logOut } = authSlice.actions;
 export default authSlice.reducer;

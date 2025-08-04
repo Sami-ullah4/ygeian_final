@@ -11,6 +11,7 @@ import ProfileAccount from "../pages/profeilAccount";
 import UserProfile from "../pages/userProfeil"; 
 import Spaceiliest from"../pages/profeilSpecilise"
 import OtpSend from "../component/optSend";
+import VarifyOtp from "../component/varify_Otp";
 
 export const Routes = createBrowserRouter([
   {
@@ -23,6 +24,7 @@ export const Routes = createBrowserRouter([
       { path: "/login", element: <LoginPage /> },
       { path: "/signup", element: <SignupPage /> },
       {path: "/send_otp" , element: <OtpSend/> },
+      {path: "/varify_otp" , element: <VarifyOtp/>},
       {
         path: "/user_profile",
         element: <UserProfile />,

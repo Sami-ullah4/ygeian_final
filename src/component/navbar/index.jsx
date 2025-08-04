@@ -19,6 +19,8 @@ const Navbar = () => {
   const cardRef = useRef(null);
   const buttonRuf = useRef(null);
   const menuBtnRef = useRef(null);
+  const { isLoginSuccess } = useSelector((state) => state.auth);
+  console.log(isLoginSuccess);
 
   const handelProfileCard = () => {
     setCardShow((prev) => !prev);
@@ -79,11 +81,14 @@ const Navbar = () => {
         </div>
 
         <div className="hidden  lg:flex items-center gap-3">
-          <Link to="/login">
-            <button className="w-[47px] h-[48px] text-[16px] text-[#002A3C] font-[500] flex justify-center items-center cursor-pointer">
-              Log in
-            </button>
-          </Link>
+          {!isLoginSuccess && (
+            <Link to="/login">
+              <button className="w-[47px] h-[48px] text-[16px] text-[#002A3C] font-[500] flex justify-center items-center cursor-pointer">
+                Log in
+              </button>
+            </Link>
+          )}
+
           <Button
             bgColor="bg-[#43B3E5]"
             text="Sign up"

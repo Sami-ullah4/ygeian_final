@@ -19,39 +19,30 @@ const Signup = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { isRegisterSuccess, isRegisterLoading, isRegisterFailed, error } =
-    useSelector((state) => state.auth);
+  const {
+    isAuthenticated,
+    isRegisterSuccess,
+    isRegisterLoading,
+    isRegisterFailed,
+    error,
+  } = useSelector((state) => state.auth);
 
-  const handleOnSubmit = async (e) => {
-    e.preventDefault();
-    const { email, fullName, password, confirmPassword } = registerData;
+  useEffect(() => {
+    dispatch(resetAuthState());
+  }, [dispatch]);
 
-    if (!email || !fullName || !password || !confirmPassword) {
-      alert("Please fill all fields including OTP");
-      return;
+  useEffect(() => {
+    if (isRegisterFailed) {
+      console.error("❌ Registration failed", error);
+      dispatch(resetAuthState());
     }
+  }, [isRegisterFailed, error, dispatch]);
 
-    if (password !== confirmPassword) {
-      setPasswordError("Passwords do not match");
-      return;
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/");
     }
-
-    if (password.length < 8) {
-      setPasswordError("Password must be at least 8 characters long.");
-      return;
-    }
-
-    //   try {
-    //     // Step 1: Verify OTP
-    //     const verifyResult = await dispatch(verifyOtp({ email, code: otpCode }));
-    //     if (verifyResult.type.includes("rejected")) {
-    //       alert("OTP verification failed. Please check your code.");
-    //       return;
-    //     }
-    // Step 2: Register user
-
-    dispatch(register(registerData));
-  };
+  }, [isAuthenticated, navigate]);
 
   const handleOnChange = (e) => {
     const { name, value } = e.target;
@@ -61,18 +52,35 @@ const Signup = () => {
     }));
   };
 
-  useEffect(() => {
-    if (isRegisterSuccess) {
-      setTimeout(() => {
-        navigate("/send_otp");
-        dispatch(resetAuthState());
-      }, 3000);
-    }
-  }, [isRegisterSuccess, navigate, dispatch]);
+  const handleOnSubmit = (e) => {
+    e.preventDefault();
+    const { email, fullName, password, confirmPassword } = registerData;
 
-  useEffect(() => {
-    dispatch(resetAuthState());
-  }, [dispatch]);
+    if (!email || !fullName || !password || !confirmPassword) {
+      alert("Please fill all fields.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setPasswordError("Passwords do not match");
+      return;
+    }
+
+    if (password.length < 8) {
+      setPasswordError("Password must be at least 8 characters");
+      return;
+    }
+
+    dispatch(register(registerData));
+  };
+
+  // Safe error message extraction
+  const getErrorMessage = (err) => {
+    if (typeof err === "string") return err;
+    if (typeof err?.error === "string") return err.error;
+    if (typeof err?.message === "string") return err.message;
+    return "Something went wrong.";
+  };
 
   return (
     <section className="flex w-full">
@@ -80,6 +88,11 @@ const Signup = () => {
         <h1 className="text-2xl lg:text-4xl font-semibold text-[#002A3C]">
           Join Ygeian FOCUS
         </h1>
+
+        {/* Show general error */}
+        {!isRegisterFailed && error && (
+          <p className="text-red-500 text-sm">{getErrorMessage(error)}</p>
+        )}
 
         <form
           onSubmit={handleOnSubmit}
@@ -111,9 +124,6 @@ const Signup = () => {
             placeholder="Password"
             className="border p-3 rounded"
           />
-          {passwordError && (
-            <p className="text-red-500 text-sm">{passwordError}</p>
-          )}
 
           <input
             type="password"
@@ -124,6 +134,10 @@ const Signup = () => {
             className="border p-3 rounded"
           />
 
+          {passwordError && (
+            <p className="text-red-500 text-sm">{passwordError}</p>
+          )}
+
           <button type="submit" className="bg-[#43B3E5] text-white p-3 rounded">
             Register
           </button>
@@ -132,11 +146,11 @@ const Signup = () => {
         <GoogleOAuth />
 
         {isRegisterLoading && <p className="text-blue-500">Registering...</p>}
+
         {isRegisterFailed && (
-          <p className="text-red-500">
-            {typeof error === "string" ? error : "Something went wrong"}
-          </p>
+          <p className="text-red-500 text-sm">{getErrorMessage(error)}</p>
         )}
+
         {isRegisterSuccess && (
           <p className="text-green-500">
             Registration successful! Redirecting...
