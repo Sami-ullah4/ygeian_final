@@ -1,49 +1,41 @@
 import React, { useState } from "react";
-import { CiVolumeHigh } from "react-icons/ci";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../../features/auth/auth.slice";
+import { logOut } from "../../features/auth/auth.slice";
 import { useNavigate } from "react-router-dom";
+import {  updateFullName } from "../../features/user/user.action";
 
 const ProfileAccount = () => {
   const user = useSelector((state) => state.auth.user);
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    dispatch(logout());
+    dispatch(logOut());
     navigate("/login");
   };
 
-  const [isEditing, useIsEditing] = useState(false);
-  const [fullName, setFullName] = useState(user?.fullName || "user name");
-  const [email, setEmail] = useState(user?.email || "123cd@gemail.com");
-  const [password, setPassword] = useState(user?.password || "*****88");
-  // onSubmite Fuction
+  const [isEditingName, setIsEditingName] = useState(false);
+
+  const [fullName, setFullName] = useState(
+    user?.fullName || user?.userData.fullName || "user name"
+  );
+  const [email, setEmail] = useState(
+    user?.userData?.email || user?.email || "123cd@gemail.com"
+  );
+  const [password, setPassword] = useState("*****88");
+
   const handleOnSubmit = (e) => {
     e.preventDefault();
   };
-  // onChange function
+
   const handleOnchange = (e) => {
     const { name, value } = e.target;
-
-    if (name === "name") {
-      setFullName(value);
-    }
-
-    if (name === "email") {
-      setEmail(value);
-    }
-
-    if (name === "password") {
-      setPassword(value);
-    }
+    if (name === "name") setFullName(value);
+    if (name === "email") setEmail(value);
+    if (name === "password") setPassword(value);
   };
+  
 
-  // edite button fuction
-  const HandleOnEdite = () => {
-    useIsEditing(true);
-  };
   return (
     <section className="m-3">
       <div className="max-w-[744px]">
@@ -63,14 +55,24 @@ const ProfileAccount = () => {
                 name="name"
                 type="text"
                 className="text-[#475569] text-[14px] border-none outline-none focus:outline-none"
-                readOnly={!isEditing}
+                readOnly={!isEditingName}
               />
             </div>
             <button
-              onClick={HandleOnEdite}
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                if (isEditingName) {
+                  dispatch(updateFullName({ fullName }));
+                  console.log(updateFullName())
+                  setIsEditingName(false);
+                } else {
+                  setIsEditingName(true);
+                }
+              }}
               className="text-[#3B82F6] text-[14px] cursor-pointer"
             >
-              Edit
+              {isEditingName ? "Save" : "Edit"}
             </button>
           </div>
 
@@ -87,12 +89,14 @@ const ProfileAccount = () => {
                 onChange={handleOnchange}
                 name="email"
                 type="email"
+                readOnly
                 className="text-[#475569] text-[14px] border-none outline-none focus:outline-none"
               />
             </div>
             <button
-              onClick={HandleOnEdite}
-              className="text-[#3B82F6] text-[14px] cursor-pointer"
+              type="button"
+              className="text-gray-400 text-[14px] cursor-not-allowed"
+              disabled
             >
               Edit
             </button>
@@ -109,19 +113,22 @@ const ProfileAccount = () => {
               <input
                 value={password}
                 onChange={handleOnchange}
-                type="password"
                 name="password"
+                type="password"
+                readOnly
                 className="text-[#475569] text-[14px] border-none outline-none focus:outline-none"
               />
             </div>
             <button
-              onClick={HandleOnEdite}
-              className="text-[#3B82F6] text-[14px] cursor-pointer"
+              type="button"
+              className="text-gray-400 text-[14px] cursor-not-allowed"
+              disabled
             >
               Edit
             </button>
           </div>
         </form>
+
         <button
           onClick={handleLogout}
           className="mt-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"

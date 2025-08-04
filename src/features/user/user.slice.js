@@ -39,6 +39,7 @@ const userSlice = createSlice({
         state.isFullNameUpdateFailed = false;
         state.isFullNameUpdated = true;
         state.user = action.payload.user;
+        state.token = action.payload.token;
       })
       .addCase(updateFullName.rejected, (state, action) => {
         state.isFullNameUpdateLoading = false;

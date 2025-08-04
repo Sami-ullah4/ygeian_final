@@ -14,6 +14,7 @@ export const register = createAsyncThunk(
   async (payload, { rejectWithValue }) => {
     try {
       const res = await registerApi(payload);
+      console.log(res.data)
       if (!res || !res.data) {
         return rejectWithValue("no responce from server");
       }
@@ -121,10 +122,12 @@ export const googleLogin = createAsyncThunk(
         image: userInfo.picture,
         provider: "google",
       };
-
+      localStorage.setItem("tempMail", userInfo?.email);
+      
       const res = await loginApi(googleData); // Send to your backend
+      // console.log(res.data)
 
-      return res.data; // { userData, accessToken }
+      return res.data; 
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
