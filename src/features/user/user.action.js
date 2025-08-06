@@ -9,9 +9,9 @@ export const updateFullName = createAsyncThunk(
   async (payload, { rejectWithValue }) => {
     try {
       const res = await updateFullNameApi(payload);
+      console.log(res)
       return res.data;
     } catch (err) {
-      // Use rejectWithValue to pass the error payload to the reducer
       return rejectWithValue(err.response ? err.response.data : err.message);
     }
   }

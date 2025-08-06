@@ -4,18 +4,16 @@ import { sendingOtp } from "../../features/auth/auth.action";
 import { useNavigate } from "react-router-dom";
 
 const OtpSend = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.auth.user); 
+  const user = useSelector((state) => state.auth.user);
   console.log(user);
-
   const [email, setEmail] = useState(user?.email || "");
 
   const handleOtpSent = (e) => {
     e.preventDefault();
     dispatch(sendingOtp({ email }));
-        navigate("/varify_otp")
-
+    navigate("/varify_otp");
   };
 
   const handleOnChange = (e) => {

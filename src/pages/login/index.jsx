@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useGoogleLogin } from "@react-oauth/google";
 
 import { login, googleLogin } from "../../features/auth/auth.action";
-import { logOut } from "../../features/auth/auth.slice";
+import {  tempCheck } from "../../features/auth/auth.slice";
 
 import googleIcon from "../../assets/icons/search 1.png";
 import linkedInIcon from "../../assets/icons/linkedin 1.png";
@@ -37,16 +37,11 @@ const LoginPage = () => {
           navigate("/send_otp");
         } else if (isLoginFailed) {
           console.error("Login failed:", error);
-          dispatch(logOut());
+          dispatch(tempCheck());
           navigate("/login");
         }
-        dispatch(logOut());
+        dispatch(tempCheck());
       }, 3000);
-    }
-
-    if (isAuthenticated) {
-      console.log("✅ User is authenticated");
-      navigate("/");
     }
 
     return () => {
@@ -60,17 +55,6 @@ const LoginPage = () => {
     navigate,
     dispatch,
   ]);
-  // Redirect if already authenticated
-  // useEffect(() => {
-  //   if (isAuthenticated) {
-  //     const timeout = setTimeout(() => {
-  //       // navigate("/");
-  //       dispatch(resetAuthState());
-  //     }, 1000);
-
-  //     return () => clearTimeout(timeout);
-  //   }
-  // }, [isAuthenticated, navigate, dispatch]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -85,10 +69,16 @@ const LoginPage = () => {
     }
     dispatch(login(user));
   };
+  useEffect(()=>{
+    
+    if (isAuthenticated) {
+      navigate("/");
+    }
+  })
 
   const loginWithGoogle = useGoogleLogin({
     onSuccess: (tokenResponse) => {
-      console.log("Google login success:", tokenResponse);
+      // console.log("Google login success:", tokenResponse);
       dispatch(googleLogin(tokenResponse.access_token));
     },
     onError: (err) => {
