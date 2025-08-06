@@ -13,8 +13,8 @@ export const sendingOtpApi = (payload) =>
   YGEIAN_NEWS.post("jwt/resend-otp", payload);
 
 // auth.api.js
-export const verifyOtpApi = (payload) =>
-  YGEIAN_NEWS.post("jwt/verify-otp", payload);
+export const verifyOtpApi = (tempToken) =>
+  YGEIAN_NEWS.post("jwt/verify-otp", tempToken);
 
 //check session
 export const checkSessionApi = (token) =>

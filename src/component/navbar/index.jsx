@@ -1,10 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import logo from "../../assets/navLogo.png";
-import { IoSearchOutline } from "react-icons/io5";
-import { IoMenu } from "react-icons/io5";
+import {
+  IoSearchOutline,
+  IoMenu,
+  IoNotificationsOutline,
+} from "react-icons/io5";
 import Button from "../button";
 import { Link, useLocation } from "react-router-dom";
-import { IoNotificationsOutline } from "react-icons/io5";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { CiSaveDown2 } from "react-icons/ci";
 import { IoSettingsOutline } from "react-icons/io5";
@@ -19,15 +21,17 @@ const Navbar = () => {
   const cardRef = useRef(null);
   const buttonRuf = useRef(null);
   const menuBtnRef = useRef(null);
-  const { isLoginSuccess } = useSelector((state) => state.auth);
-  console.log(isLoginSuccess);
+
+  const user = useSelector((state) => state.auth.user);
 
   const handelProfileCard = () => {
     setCardShow((prev) => !prev);
   };
+
   const toggleMobileMenu = () => {
     setMobileMenuOpen((prev) => !prev);
   };
+
   useEffect(() => {
     setCardShow(false);
   }, [location]);
@@ -51,7 +55,6 @@ const Navbar = () => {
     };
   }, []);
 
-  const user = useSelector((state) => state.auth.user);
   return (
     <nav className="shadow-md bg-white">
       <div className="h-[48px] lg:h-[71px] mx-auto flex items-center justify-between px-4">
@@ -80,22 +83,24 @@ const Navbar = () => {
           <IoSearchOutline className="absolute right-4 text-[#96A7AD] w-[24px] h-[24px]" />
         </div>
 
-        <div className="hidden  lg:flex items-center gap-3">
-          {!isLoginSuccess && (
+        <div className="hidden lg:flex items-center gap-3">
+          {/* Login button shows only if no token in localStorage */}
+          {!localStorage.getItem("ygeianNewsUser") && (
             <Link to="/login">
               <button className="w-[47px] h-[48px] text-[16px] text-[#002A3C] font-[500] flex justify-center items-center cursor-pointer">
                 Log in
               </button>
             </Link>
           )}
-
-          <Button
-            bgColor="bg-[#43B3E5]"
-            text="Sign up"
-            routDirection={"/signup"}
-            borderColor="border-[#43B3E5]"
-            textColor="text-white"
-          />
+          {!localStorage.getItem("ygeianNewsUser") && (
+            <Button
+              bgColor="bg-[#43B3E5]"
+              text="Sign up"
+              routDirection={"/signup"}
+              borderColor="border-[#43B3E5]"
+              textColor="text-white"
+            />
+          )}
           <div className="flex gap-3 justify-center items-center">
             <Link to="/profile-settings/notification">
               <IoNotificationsOutline className="text-[33px] text-[#375E6C] cursor-pointer" />
@@ -104,11 +109,6 @@ const Navbar = () => {
             <div className="relative inline-block">
               <div ref={buttonRuf} onClick={handelProfileCard}>
                 <div className="border-[1px] border-[#D6E0E4] rounded-full flex justify-center items-center gap-3 p-0.5">
-                  {/* <img
-                    src={profileIcon}
-                    alt="profile"
-                    className="w-[36px] h-[36px]"
-                  /> */}
                   <RiArrowDropDownLine
                     className={`text-[35px] transform transition-transform duration-300 ${
                       cardShow ? "rotate-180" : "rotate-0"
@@ -118,7 +118,6 @@ const Navbar = () => {
               </div>
 
               {/* Dropdown card */}
-
               {(cardShow || mobileMenuOpen) && (
                 <div
                   ref={cardRef}

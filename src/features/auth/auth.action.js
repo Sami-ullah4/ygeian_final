@@ -93,17 +93,20 @@ export const sendingOtp = createAsyncThunk(
 
 export const verifyOtp = createAsyncThunk(
   "auth/verifyOtp",
-  async (payload, { rejectWithValue }) => {
+  async (tempToken, { rejectWithValue }) => {
     try {
-      const response = await verifyOtpApi(payload);
+      const response = await verifyOtpApi(tempToken);
+      console.log("verifyOtp API response:", response.data);
       return response.data;
     } catch (error) {
+      console.error("verifyOtp error:", error.response?.data || error.message);
       return rejectWithValue(
-        error.response?.data?.message || "OTP verification failed"
+        error.response?.data?.message || error.message || "OTP verification failed"
       );
     }
   }
 );
+
 ///googlelogin
 
 export const googleLogin = createAsyncThunk(
@@ -111,11 +114,9 @@ export const googleLogin = createAsyncThunk(
   async (access_Token, { rejectWithValue }) => {
     try {
       const authData = await googleSignIn(access_Token);
-      // console.log("✅ Google response:", authData.data);
 
       const userInfo = authData?.data;
 
-      // console.log(userInfo?.email)
       const googleData = {
         email: userInfo.email,
         fullName: userInfo.name,
