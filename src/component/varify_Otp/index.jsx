@@ -34,11 +34,9 @@ const VerifyOtp = () => {
       setLoading(true);
       const payload = { otp };
 
-      console.log( payload)
 
       const result = await dispatch(verifyOtp(payload)).unwrap();
 
-      console.log("verifyOtp result:", result);
 
       navigate("/");
     } catch (err) {

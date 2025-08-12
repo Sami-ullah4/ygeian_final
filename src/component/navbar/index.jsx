@@ -6,23 +6,27 @@ import {
   IoNotificationsOutline,
 } from "react-icons/io5";
 import Button from "../button";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { CiSaveDown2 } from "react-icons/ci";
 import { IoSettingsOutline } from "react-icons/io5";
 import { MdLogout } from "react-icons/md";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { logOut } from "../../features/auth/auth.slice";
 
 const Navbar = () => {
   const [cardShow, setCardShow] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const location = useLocation();
   const cardRef = useRef(null);
   const buttonRuf = useRef(null);
   const menuBtnRef = useRef(null);
 
   const user = useSelector((state) => state.auth.user);
+  const athenticated = useSelector((state) => state.auth.isAuthenticated);
 
   const handelProfileCard = () => {
     setCardShow((prev) => !prev);
@@ -30,11 +34,18 @@ const Navbar = () => {
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen((prev) => !prev);
+    setCardShow(true);
+    console.log("show card");
   };
 
   useEffect(() => {
     setCardShow(false);
   }, [location]);
+
+  const HandelLogout = () => {
+    dispatch(logOut());
+    navigate("/login");
+  };
 
   useEffect(() => {
     const handleClickOrScroll = (e) => {
@@ -55,57 +66,73 @@ const Navbar = () => {
     };
   }, []);
 
+  const natifiUrl = location.pathname;
+  const shouldShowNotification = !natifiUrl.startsWith("/user_profile");
+
   return (
-    <nav className="shadow-md bg-white">
-      <div className="h-[48px] lg:h-[71px] mx-auto flex items-center justify-between px-4">
-        <div className="flex justify-center items-center">
-          <Link to="/">
-            <img
-              src={logo}
-              alt="Logo"
-              className="w-[139px] h-[28px] lg:w-[234px] lg:h-[48px]"
-            />
-          </Link>
-        </div>
-
-        {/* Mobile Menu Icon */}
-        <div className="cursor-pointer flex items-center justify-center w-[24px] h-[24px] lg:hidden">
-          <IoMenu ref={menuBtnRef} onClick={toggleMobileMenu} />
-        </div>
-
-        {/* Search input - Only on large screens */}
-        <div className="hidden lg:flex items-center justify-center relative">
-          <input
-            type="text"
-            placeholder="Search..."
-            className="w-[500px] h-[49px] border-2 border-[#D6E0E4] pl-4 pr-12 rounded-[8px] placeholder:text-[#96A7AD]"
+    <nav className="shadow-md bg-white max-h-[54px] lg:h-[71px] mx-auto flex items-center justify-between px-4">
+      <div className="flex justify-center items-center">
+        <Link to="/">
+          <img
+            src={logo}
+            alt="Logo"
+            className="min-w-[11rem] min-h-[2.5rem] max-w-[1rem] max-h-[10rem]  "
           />
-          <IoSearchOutline className="absolute right-4 text-[#96A7AD] w-[24px] h-[24px]" />
-        </div>
+        </Link>
+      </div>
 
-        <div className="hidden lg:flex items-center gap-3">
-          {/* Login button shows only if no token in localStorage */}
-          {!localStorage.getItem("ygeianNewsUser") && (
-            <Link to="/login">
-              <button className="w-[47px] h-[48px] text-[16px] text-[#002A3C] font-[500] flex justify-center items-center cursor-pointer">
-                Log in
-              </button>
-            </Link>
-          )}
-          {!localStorage.getItem("ygeianNewsUser") && (
-            <Button
-              bgColor="bg-[#43B3E5]"
-              text="Sign up"
-              routDirection={"/signup"}
-              borderColor="border-[#43B3E5]"
-              textColor="text-white"
-            />
-          )}
+      {/* Mobile Menu Icon */}
+      <div className="cursor-pointer flex items-center justify-center w-[24px] h-[24px] lg:hidden">
+        <IoMenu ref={menuBtnRef} onClick={toggleMobileMenu} />
+      </div>
+
+      {/* Search input - Only on large screens */}
+      <div className="hidden lg:flex items-center justify-center relative ">
+        <input
+          type="text"
+          placeholder="Search..."
+          className="
+     min-w-[24rem] max-w-[500px] h-[39px] border-2 border-[#D6E0E4]
+      pl-4 pr-12 rounded-[8px]
+      placeholder:text-[#96A7AD]
+      placeholder:font-[300]
+      placeholder:text-[16px]
+      placeholder:leading-[100%]
+    "
+        />
+        <IoSearchOutline className="absolute right-2 top-1/2 -translate-y-1/2 text-[#96A7AD] w-[24px] h-[24px]" />
+      </div>
+
+      <div className="hidden lg:flex items-center gap-3">
+        {/* Login button shows only if no token in localStorage */}
+        {!localStorage.getItem("ygeianNewsUser") && (
+          <Link
+            to="/login"
+            className="w-[47px] h-[48px] text-[16px] text-[#002A3C] font-[500]
+            flex justify-center items-center cursor-pointer"
+          >
+            {" "}
+            Log in
+          </Link>
+        )}
+        {!localStorage.getItem("ygeianNewsUser") && (
+          <Button
+            bgColor="bg-[#43B3E5]"
+            text="Sign up"
+            routDirection={"/signup"}
+            borderColor="border-[#43B3E5]"
+            textColor="text-white"
+          />
+        )}
+        {athenticated && (
           <div className="flex gap-3 justify-center items-center">
-            <Link to="/profile-settings/notification">
-              <IoNotificationsOutline className="text-[33px] text-[#375E6C] cursor-pointer" />
-            </Link>
+            {shouldShowNotification && (
+              <Link to="/profile-settings/notification">
+                <IoNotificationsOutline className="text-[33px] text-[#375E6C] cursor-pointer" />
+              </Link>
+            )}
             {/* profile div */}
+
             <div className="relative inline-block">
               <div ref={buttonRuf} onClick={handelProfileCard}>
                 <div className="border-[1px] border-[#D6E0E4] rounded-full flex justify-center items-center gap-3 p-0.5">
@@ -118,6 +145,7 @@ const Navbar = () => {
               </div>
 
               {/* Dropdown card */}
+
               {(cardShow || mobileMenuOpen) && (
                 <div
                   ref={cardRef}
@@ -142,7 +170,7 @@ const Navbar = () => {
                     <hr className="bg-[#D6E0E4]" />
 
                     <div>
-                      <Link to="/profile-settings/savedArticles">
+                      <Link to="/user_profile/SavedArtical">
                         <div className="flex items-center">
                           <CiSaveDown2 className="text-[#002A3C] text-[20px]" />
                           <h1 className="font-[400] px-2 text-[12px] text-[#002A3C]">
@@ -164,16 +192,19 @@ const Navbar = () => {
 
                     <div className="flex items-center">
                       <MdLogout className="text-[#002A3C] text-[20px]" />
-                      <h1 className="font-[400] px-2 text-[12px] text-[#002A3C]">
+                      <button
+                        onClick={HandelLogout}
+                        className="font-[400] px-2 text-[12px] text-[#002A3C]"
+                      >
                         Logout
-                      </h1>
+                      </button>
                     </div>
                   </div>
                 </div>
               )}
             </div>
           </div>
-        </div>
+        )}
       </div>
     </nav>
   );

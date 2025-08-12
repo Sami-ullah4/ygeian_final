@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useGoogleLogin } from "@react-oauth/google";
 
 import { login, googleLogin } from "../../features/auth/auth.action";
-import {  tempCheck } from "../../features/auth/auth.slice";
+import { tempCheck } from "../../features/auth/auth.slice";
 
 import googleIcon from "../../assets/icons/search 1.png";
 import linkedInIcon from "../../assets/icons/linkedin 1.png";
@@ -69,16 +69,14 @@ const LoginPage = () => {
     }
     dispatch(login(user));
   };
-  useEffect(()=>{
-    
+  useEffect(() => {
     if (isAuthenticated) {
       navigate("/");
     }
-  })
+  });
 
   const loginWithGoogle = useGoogleLogin({
     onSuccess: (tokenResponse) => {
-      // console.log("Google login success:", tokenResponse);
       dispatch(googleLogin(tokenResponse.access_token));
     },
     onError: (err) => {
@@ -184,7 +182,7 @@ const LoginPage = () => {
 
               <div className="flex justify-center lg:justify-end">
                 <Link
-                  to="/resetPassword"
+                  to="/reset_password"
                   className="text-[#43B3E5] text-sm font-semibold hover:underline"
                 >
                   Forgot your password?

@@ -27,17 +27,16 @@ const ArticleCard = () => {
         <h1 className="font-[600] text-[40px] leading-[130%] text-[#002A3C]  m-auto pb-5">
           {article.title}
         </h1>
-       <p className="font-[400] text-[16px] leading-[150%] text-[#375E6C] py-5">
-  {article.description}{" "}
-  <a
-    href="https://www.medpagetoday.com/popmedicine/cultureclinic/116629"
-    target="_blank"
-    rel="noopener noreferrer"
-  >
-    Learn more
-  </a>
-</p>
-
+        <p className="font-[400] text-[16px] leading-[150%] text-[#375E6C] py-5">
+          {article.description}{" "}
+          <a
+            href="https://www.medpagetoday.com/popmedicine/cultureclinic/116629"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Learn more
+          </a>
+        </p>
       </div>
 
       <div className="flex flex-col gap-[15px]">

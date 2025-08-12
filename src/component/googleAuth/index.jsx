@@ -2,8 +2,7 @@ import React from "react";
 import { GoogleLogin } from "@react-oauth/google";
 
 const GoogleOAuth = () => {
-    const handelOnSeccs = (credResponse)=>{
-        console.log(credResponse)
+    const handelOnSeccs = ()=>{
 
     }
   return (
@@ -11,7 +10,6 @@ const GoogleOAuth = () => {
     <GoogleLogin
       onSuccess={(credentialResponse) => handelOnSeccs(credentialResponse)}
       onError={() => {
-        console.log("Login Failed");
       }}
     />
     </div>

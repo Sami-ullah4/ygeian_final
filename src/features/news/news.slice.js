@@ -1,6 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getNews } from "./news.action";
-
+import { getNews, toggleSaveNews } from "./news.action";
 
 const initialState = {
   news: [],
@@ -9,7 +8,14 @@ const initialState = {
   isNewsFailed: false,
   error: {},
 
-  
+  //seved article
+  resetSaveToggle: (state) => {
+    state.isSaveToggled = false;
+    state.isSaveToggleLoading = false;
+    state.isSaveToggleRejected = false;
+    state.saveMsg = {};
+    state.saveErr = {};
+  },
 };
 
 export const newsSlicer = createSlice({
@@ -37,8 +43,23 @@ export const newsSlicer = createSlice({
         state.error = action.payload;
       });
 
-
-
+    //////////////////////////////////////////////
+    // save-toggle case
+    builder.addCase(toggleSaveNews.pending, (state) => {
+      state.isSaveToggleLoading = true;
+    });
+    builder.addCase(toggleSaveNews.fulfilled, (state, action) => {
+      state.isSaveToggleLoading = false;
+      state.isSaveToggleRejected = false;
+      state.isSaveToggled = true;
+      state.saveMsg = action.payload.message;
+    });
+    builder.addCase(toggleSaveNews.rejected, (state, action) => {
+      state.isSaveToggleLoading = false;
+      state.isSaveToggled = false;
+      state.isSaveToggleRejected = true;
+      state.saveErr = action.payload.error;
+    });
   },
 });
 
