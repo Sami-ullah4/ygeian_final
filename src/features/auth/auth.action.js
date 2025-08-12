@@ -7,6 +7,9 @@ import {
   sendingOtpApi,
   verifyOtpApi,
   googleSignIn,
+  changePasswordApi,
+  forgetPasswordApi,
+  updatePasswordApi,
 } from "./api";
 ///////register api//////////////
 export const register = createAsyncThunk(
@@ -14,7 +17,6 @@ export const register = createAsyncThunk(
   async (payload, { rejectWithValue }) => {
     try {
       const res = await registerApi(payload);
-      console.log(res.data)
       if (!res || !res.data) {
         return rejectWithValue("no responce from server");
       }
@@ -71,9 +73,7 @@ export const sendingOtp = createAsyncThunk(
   async (payload, { rejectWithValue }) => {
     try {
       const response = await sendingOtpApi(payload);
-      console.log(response.data);
 
-      // console.log(response);
       if (!response?.data) {
         return rejectWithValue("No response data received from server.");
       }
@@ -96,7 +96,6 @@ export const verifyOtp = createAsyncThunk(
   async (tempToken, { rejectWithValue }) => {
     try {
       const response = await verifyOtpApi(tempToken);
-      console.log("verifyOtp API response:", response.data);
       return response.data;
     } catch (error) {
       console.error("verifyOtp error:", error.response?.data || error.message);
@@ -126,11 +125,52 @@ export const googleLogin = createAsyncThunk(
       localStorage.setItem("tempMail", userInfo?.email);
       
       const res = await loginApi(googleData); // Send to your backend
-      // console.log(res.data)
 
       return res.data; 
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
+    }
+  }
+);
+
+//change password 
+export const changePassword = createAsyncThunk(
+  "change/password",
+  async ( {url,newPassword }, { rejectWithValue }) => {
+    try {
+      const response = await changePasswordApi( {url,newPassword} );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data || error.message || "There was an error"
+      );
+    }
+  }
+);
+
+//forget password 
+export const forgetPassword = createAsyncThunk(
+  "auth/forgetPassword",
+  async (payload, { rejectWithValue }) => {
+    try {
+      const res = await forgetPasswordApi(payload);
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response ? err.response.data : err.message);
+    }
+  }
+);
+
+// Update Password
+export const updatePassword = createAsyncThunk(
+  "auth/updatePassword",
+  async ({password ,resetPasswordToken}, { rejectWithValue }) => {
+    console.log(resetPasswordToken)
+    try {
+      const res = await updatePasswordApi({password ,resetPasswordToken});
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response ? err.response.data : err.message);
     }
   }
 );

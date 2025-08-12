@@ -7,6 +7,9 @@ import {
   sendingOtp,
   verifyOtp,
   googleLogin,
+  changePassword,
+  forgetPassword,
+  updatePassword,
 } from "./auth.action";
 
 // Load user from localStorage
@@ -25,7 +28,6 @@ const tokenFromStorage = localStorage.getItem("ygeianNewsToken");
 
 const initialState = {
   user: userFromStorage,
-  tempToken: sessionStorage.getItem("tempMail") || null,
 
   token: tokenFromStorage || null, // final authenticated token
   error: {},
@@ -53,6 +55,21 @@ const initialState = {
   otpLoading: false,
   otpSent: false,
   otpError: null,
+  //change password
+  ischangePasswordSeccess: false,
+  ischangePasswordFailed: false,
+  ischangePasswordPanding: false,
+  ischangePasswordLoading: false,
+
+  //Forget Paassword
+  isForgetPasswordSuccess: false,
+  isForgetPasswordLoading: false,
+  isForgetPasswordFailed: false,
+
+  //Forget Paassword
+  isUpdatePasswordSuccess: false,
+  isUpdatePasswordLoading: false,
+  isUpdatePasswordFailed: false,
 };
 
 export const authSlice = createSlice({
@@ -72,6 +89,16 @@ export const authSlice = createSlice({
       state.otpError = null;
       state.error = {};
     },
+    resetResetPasswordState: (state) => {
+      state.isForgetPasswordSuccess = false;
+      state.isForgetPasswordLoading = false;
+      state.isForgetPasswordFailed = false;
+      state.error = {};
+      state.isUpdatePasswordSuccess = false;
+      state.isUpdatePasswordLoading = false;
+      state.isUpdatePasswordFailed = false;
+      state.error = {};
+    },
 
     logOut: (state) => {
       Object.assign(state, {
@@ -86,7 +113,6 @@ export const authSlice = createSlice({
       });
       localStorage.removeItem("ygeianNewsToken");
       localStorage.removeItem("ygeianNewsUser");
-      localStorage.removeItem("tempMail");
     },
     tempCheck: (state) => {
       state.isLoginSuccess = false;
@@ -130,7 +156,6 @@ export const authSlice = createSlice({
         state.isAuthenticated = false;
         state.isOtpRequired = true;
         state.token = accessToken;
-        sessionStorage.setItem("tempMail", accessToken);
       })
       .addCase(login.rejected, (state, action) => {
         state.isLoginLoading = false;
@@ -147,7 +172,8 @@ export const authSlice = createSlice({
       .addCase(verifyOtp.fulfilled, (state, action) => {
         const wrapper = action.payload?.user || action.payload || {};
         const accessToken = wrapper.accessToken || null;
-        const userData = wrapper.userData || wrapper.user || wrapper.profile || null;
+        const userData =
+          wrapper.userData || wrapper.user || wrapper.profile || null;
 
         state.otpLoading = false;
         state.user = userData || state.user;
@@ -159,8 +185,8 @@ export const authSlice = createSlice({
         state.isOtpRequired = false;
 
         if (accessToken) localStorage.setItem("ygeianNewsToken", accessToken);
-        if (userData) localStorage.setItem("ygeianNewsUser", JSON.stringify(userData));
-        localStorage.removeItem("tempMail");
+        if (userData)
+          localStorage.setItem("ygeianNewsUser", JSON.stringify(userData));
       })
       .addCase(verifyOtp.rejected, (state, action) => {
         state.otpLoading = false;
@@ -176,7 +202,11 @@ export const authSlice = createSlice({
       })
       .addCase(googleLogin.fulfilled, (state, action) => {
         const accessToken = action.payload?.accessToken || null;
-        const userData = action.payload?.userData || action.payload?.user || action.payload?.profile || null;
+        const userData =
+          action.payload?.userData ||
+          action.payload?.user ||
+          action.payload?.profile ||
+          null;
 
         state.isLoginLoading = false;
         state.isLoginSuccess = true;
@@ -187,7 +217,8 @@ export const authSlice = createSlice({
         state.isOtpRequired = false;
 
         if (accessToken) localStorage.setItem("ygeianNewsToken", accessToken);
-        if (userData) localStorage.setItem("ygeianNewsUser", JSON.stringify(userData));
+        if (userData)
+          localStorage.setItem("ygeianNewsUser", JSON.stringify(userData));
       })
       .addCase(googleLogin.rejected, (state, action) => {
         state.isLoginLoading = false;
@@ -217,7 +248,6 @@ export const authSlice = createSlice({
         state.token = null;
         localStorage.removeItem("ygeianNewsToken");
         localStorage.removeItem("ygeianNewsUser");
-        localStorage.removeItem("tempMail");
         state.error = action.payload || action.error?.message;
       });
 
@@ -238,8 +268,61 @@ export const authSlice = createSlice({
         state.otpSent = false;
         state.otpError = action.payload || "OTP sending failed";
       });
+    // changePassword cases
+    builder
+      .addCase(changePassword.pending, (state) => {
+        state.isChangePasswordSuccess = false;
+        state.isChangePasswordFailed = false;
+        state.isChangePasswordPending = true;
+        state.isChangePasswordLoading = true;
+      })
+      .addCase(changePassword.fulfilled, (state, action) => {
+        const accessToken = action.payload;
+        state.isChangePasswordSuccess = true;
+        state.isChangePasswordFailed = false;
+        state.isChangePasswordPending = false;
+        state.isChangePasswordLoading = false;
+        state.user = action.payload;
+        state.token = accessToken;
+        if (accessToken) localStorage.setItem("ygeianNewsToken", accessToken);
+      })
+      .addCase(changePassword.rejected, (state) => {
+        state.isChangePasswordSuccess = false;
+        state.isChangePasswordFailed = true;
+        state.isChangePasswordPending = false;
+        state.isChangePasswordLoading = false;
+      });
+    // Add cases for Forget Password
+    builder.addCase(forgetPassword.pending, (state) => {
+      state.isForgetPasswordLoading = true;
+    });
+    builder.addCase(forgetPassword.fulfilled, (state) => {
+      state.isForgetPasswordSuccess = true;
+      state.isForgetPasswordLoading = false;
+    });
+    builder.addCase(forgetPassword.rejected, (state, action) => {
+      state.isForgetPasswordSuccess = false;
+      state.isForgetPasswordLoading = false;
+      state.isForgetPasswordFailed = true;
+      state.error = action.payload;
+    });
+
+    // Add cases for Update Password
+    builder.addCase(updatePassword.pending, (state) => {
+      state.isUpdatePasswordLoading = true;
+    });
+    builder.addCase(updatePassword.fulfilled, (state) => {
+      state.isUpdatePasswordSuccess = true;
+      state.isUpdatePasswordLoading = false;
+    });
+    builder.addCase(updatePassword.rejected, (state, action) => {
+      state.isUpdatePasswordSuccess = false;
+      state.isUpdatePasswordLoading = false;
+      state.isUpdatePasswordFailed = true;
+      state.error = action.payload;
+    });
   },
 });
 
-export const { resetAuthState, logOut , tempCheck} = authSlice.actions;
+export const { resetAuthState, logOut, tempCheck } = authSlice.actions;
 export default authSlice.reducer;

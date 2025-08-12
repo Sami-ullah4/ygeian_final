@@ -7,7 +7,6 @@ export const loginApi = (payload) => YGEIAN_NEWS.post("jwt/login", payload);
 export const registerApi = (payload) =>
   YGEIAN_NEWS.post("jwt/register", payload);
 
-
 //resend_otp
 export const sendingOtpApi = (payload) =>
   YGEIAN_NEWS.post("jwt/resend-otp", payload);
@@ -15,6 +14,39 @@ export const sendingOtpApi = (payload) =>
 // auth.api.js
 export const verifyOtpApi = (tempToken) =>
   YGEIAN_NEWS.post("jwt/verify-otp", tempToken);
+
+// forget password
+export const forgetPasswordApi = (payload) =>
+  YGEIAN_NEWS.post("user/forget-password", payload);
+
+//change password
+// export const changePasswordApi = ({url , newPassword}) =>
+//   YGEIAN_NEWS.post("user/update-password", {url , newPassword});
+
+export const changePasswordApi = ({ url, newPassword }) => {
+  return YGEIAN_NEWS.post(
+    "user/update-password",
+    { newPassword },
+    {
+      headers: {
+        Authorization: `Bearer ${url}`, // token sent in header
+      },
+    }
+  );
+};
+
+//update password
+export const updatePasswordApi = ({password, resetPasswordToken }) => {
+  return YGEIAN_NEWS.post(
+    "user/update-password",
+    {password},
+    {
+      headers: {
+        Authorization: `Bearer ${resetPasswordToken}`,
+      },
+    }
+  );
+};
 
 //check session
 export const checkSessionApi = (token) =>

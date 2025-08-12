@@ -1,19 +1,17 @@
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { sendingOtp } from "../../features/auth/auth.action";
-import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { forgetPassword } from "../../features/auth/auth.action";
+import { Link, useNavigate } from "react-router-dom";
 
-const OtpSend = () => {
+const PasswordResetEmail = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.auth.user);
 
-  const [email, setEmail] = useState(user?.email || "");
+  const [email, setEmail] = useState("");
 
   const handleOtpSent = (e) => {
     e.preventDefault();
-    dispatch(sendingOtp({ email }));
-    navigate("/varify_otp");
+    dispatch(forgetPassword({email}));
   };
 
   const handleOnChange = (e) => {
@@ -28,10 +26,11 @@ const OtpSend = () => {
       <div className="bg-[#F8F9FC] shadow-md rounded-lg w-[540px] h-[350px] p-6">
         <div className="text-center mb-6">
           <h1 className="text-gray-800 text-[32px] leading-[150%] font-[600]">
-            Send OTP
+            Reset you password
           </h1>
           <p className="font-[400] text-[14px] leading-[150%] text-[#375E6C]">
-            Enter the email address associated with your account to reset it.
+            Enter the email address associated with your account to reset you
+            password.
           </p>
         </div>
         <form className="gap-3 flex flex-col" onSubmit={handleOtpSent}>
@@ -52,9 +51,10 @@ const OtpSend = () => {
             Send Reset Link
           </button>
         </form>
+        <Link to={"/reset_password_email"}>Change password</Link>
       </div>
     </section>
   );
 };
 
-export default OtpSend;
+export default PasswordResetEmail;
